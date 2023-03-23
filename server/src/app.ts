@@ -1,10 +1,13 @@
 import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv"
+import cors from "cors"
 dotenv.config()
 
 const PORT = 8000;
 
 const app: Application = express();
+
+app.use(cors({ origin: "*", credentials: false }))
 
 app.get("/test", (req, res) => {
   return res.status(200).json("Server is running")
@@ -12,8 +15,8 @@ app.get("/test", (req, res) => {
 
 app.get("/connect", async (req, res) => {
   try {
-
-    const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/mail/add?callback=http://localhost:8000/callback`, {
+    const { email, type } = req.query
+    const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/mail/add?callback=http://localhost:8000/callback&type=${type ? type : ''}&email=${email}`, {
       headers: {
         "x-api-key": `${process.env.TEKSTAI_API_KEY}`,
       }
@@ -30,7 +33,7 @@ app.get("/connect", async (req, res) => {
 app.get("/callback", async (req, res) => {
   try {
     console.log(req.query)
-    return res.redirect("https://www.google.com")
+    return res.redirect(`http://localhost:3000`)
   } catch (err) {
     console.log(err)
     return res.status(500).json("something went wrong")
