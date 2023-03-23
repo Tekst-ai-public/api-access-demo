@@ -1,30 +1,29 @@
 import React, { useRef } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+import { apiFetch } from '../utils/apiFetch'
 
 export default function Connect() {
 
-  const { apiFetch } = useAuth()
-  const emailRef = useRef<HTMLInputElement | null>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+  const nameRef = useRef<HTMLInputElement>(null)
 
-  async function handleConnectWithOutlook() {
+  async function handleConnectWithOutlook(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
     const email = emailRef.current?.value
-    const res = await apiFetch<string>(`/connect?type=outlook&email=${email}`)
-    const authUrl = await res.json()
-    window.location.href = authUrl
-  }
-
-  async function handleConnectWithOther() {
-    const email = emailRef.current?.value
-    const res = await apiFetch<string>(`/connect?email=${email}`)
+    const name = nameRef.current?.value
+    const res = await apiFetch<string>(`/connect?type=outlook&email=${email}&name=${name}`)
     const authUrl = await res.json()
     window.location.href = authUrl
   }
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="connect-form">
-      <input ref={emailRef} type="text" />
-      <button onClick={() => handleConnectWithOutlook()}>Connect with Outlook</button>
-      <button onClick={() => handleConnectWithOther()}>Connect with other mail</button>
-    </form>
+    <div style={{ width: "500px", border: "2px solid black", padding: ".5rem 1rem" }}>
+      <form onSubmit={(e) => handleConnectWithOutlook(e)} className="connect-form">
+        <label htmlFor="email">Email</label>
+        <input id="email" ref={emailRef} type="text" />
+        <label htmlFor="name">Name</label>
+        <input id="name" ref={nameRef} type="text" />
+        <button type="submit">Connect with Outlook</button>
+      </form>
+    </div>
   )
 }

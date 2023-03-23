@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/app.ts",
+    "start": "ts-node src/app.ts --watch",
     "build": "tsc",
     "startprod": "node dist/app.js"
   },
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "nodemon": "^2.0.22",
     "ts-node": "^10.9.1"
   }
 }

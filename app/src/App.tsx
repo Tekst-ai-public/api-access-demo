@@ -1,8 +1,8 @@
-import { AuthProvider } from "./contexts/AuthContext";
+import { CurrentIntegrationProvider } from "./components/CurrentIntegrationContext";
 import Main from "./components/Main";
 
 function App() {
-  return <AuthProvider><Main /></AuthProvider>
+  return <CurrentIntegrationProvider><Main /></CurrentIntegrationProvider>
 }
 
 export default App;

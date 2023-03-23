@@ -9,14 +9,17 @@ const app: Application = express();
 
 app.use(cors({ origin: "*", credentials: false }))
 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.get("/test", (req, res) => {
   return res.status(200).json("Server is running")
 })
 
 app.get("/connect", async (req, res) => {
   try {
-    const { email, type } = req.query
-    const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/mail/add?callback=http://localhost:8000/callback&type=${type ? type : ''}&email=${email}`, {
+    const { email, name } = req.query
+    const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/mail/add?callback=http://localhost:8000/callback&type=outlook&email=${email}&state=${name}`, {
       headers: {
         "x-api-key": `${process.env.TEKSTAI_API_KEY}`,
       }
@@ -40,23 +43,35 @@ app.get("/callback", async (req, res) => {
   }
 })
 
-app.get("/send/:id", async (req, res) => {
+app.post("/send/:id", async (req, res) => {
   try {
+    console.log(req.body)
     const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/mail/send?id=${req.params.id}`, {
       method: "POST",
       headers: {
         "x-api-key": `${process.env.TEKSTAI_API_KEY}`,
-        "content-type": "application/json"
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        "to": ["julien.vanbeveren@gmail.com"],
-        "subject": "demo email",
-        "body": "this is a demo email"
-      })
+      body: JSON.stringify(req.body)
     })
     const data = await response.json()
     console.log(data)
     return res.status(200).json("success")
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json("something went wrong")
+  }
+})
+
+app.get("/integrations", async (req, res) => {
+  try {
+    const response = await fetch(`${process.env.TEKSTAI_BASE_URL}/integrations/all`, {
+      headers: {
+        "x-api-key": `${process.env.TEKSTAI_API_KEY}`,
+      }
+    })
+    const data = await response.json()
+    return res.status(200).json(data)
   } catch (err) {
     console.log(err)
     return res.status(500).json("something went wrong")
